@@ -76,7 +76,7 @@ void group::start()
 
 group::groupState group::loop() 
 {
-  if (m_groupState == GROUP_COMPLETE) return GROUP_COMPLETE;
+  if (m_groupState == GROUP_COMPLETE || m_groupState == GROUP_NOT_EXECUTING) return GROUP_COMPLETE;
 
   sequence* pSequence;
 

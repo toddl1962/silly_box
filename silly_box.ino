@@ -48,6 +48,14 @@ enum switchActionEnum
   TRANS_TO_OFF
 };
 
+enum sillyStateEnum
+{
+  SILLY_IDLE,
+  SILLY_START_SWITCH_GROUP,
+  SILLY_EXEC_SWITCH_GROUP,
+  SILLY_EXEC_PROX_GROUP,
+};
+
 // Test Mode pin
 const int testModePin = 11;
 
@@ -199,111 +207,98 @@ void setup()
 
 void loop()
 {
-  //
-  // These static variables are retained between calls to loop in order
-  // to provide context of the state of the silly box.  Defined here to
-  // limit scope.
-  //
+  ///////////////////////////////////////////////////////////////////////////////////////////
+  // These static variables are retained between calls to loop() in order to provide context 
+  // for the state of the silly box.  Defined here to limit scope.
+  ///////////////////////////////////////////////////////////////////////////////////////////
   
-  static int switchGroupIndex = random(numSwitchGroups);
-  static int proxGroupIndex = random(numProxGroups);
-  static bool executingSwitchGroup = false;
-  static bool executingProxGroup = false;
-
-  // Get front switch action
+  static sillyStateEnum sillyState = SILLY_IDLE; // Silly Box state
+  static int switchGroupIndex;  // currently processing switch group
+  static int proxGroupIndex;    // currently processing prox group
+  
+  ///////////////////////////////////////////////////////////////////////////////////////////
+  // Process the current state of the silly box
+  ///////////////////////////////////////////////////////////////////////////////////////////
+  
+  // Get front switch action. Must be called every time through loop()!
   switchActionEnum switchAction = (switchActionEnum) switchActionCheck();
 
-  ///////////////////////////////////////////////////////////////////////////////
-  // P r o c e s s    f r o n t   s w i t c h   a c t i o n s
-  ///////////////////////////////////////////////////////////////////////////////
-  
-  if (switchAction == TRANS_TO_ON)
+  switch (sillyState)
   {
+    //    
+    // State SILLY_IDLE waits for the human to cause something to happen
     //
-    // Switch has been turned ON
+    case SILLY_IDLE:
+      if (switchAction == TRANS_TO_ON)
+      {
+        // A human has turned the switch on so execute a switch group
+        sillyState = SILLY_START_SWITCH_GROUP;
+      }
+      else if (proxSensor.proximityAlertCheck())
+      {
+        // Switch has not transitioned so check to see if a human is
+        // approaching the switch and begin the harassment procedure.
+        proxGroupIndex = random(numProxGroups);
+        DebugPrint(F("Start Prox Group "));
+        DebugPrintln(proxGroupIndex);
+        proxGroupTable[proxGroupIndex].start();
+        sillyState = SILLY_EXEC_PROX_GROUP;
+      }
+      break;
+      
+    //    
+    // State SILLY_START_SWITCH_GROUP chooses a random switch group and starts it
     //
-    
-    // If we are executing a proximity group then immediately stop so
-    // we can execute a switch group
-    if (executingProxGroup)
-    {
-      // Stop the currently executing proximity sequence
-      DebugPrintln(F("Stop Proximity Group"));
-      proxGroupTable[proxGroupIndex].reset();
-      proxGroupIndex = random(numProxGroups);
-      executingProxGroup = false;
-    }
-    // Start switch group
-    DebugPrint(F("Start Switch Group "));
-    DebugPrintln(switchGroupIndex);
-    switchGroupTable[switchGroupIndex].start();
-    executingSwitchGroup = true;
-  }
-  else if (switchAction == TRANS_TO_OFF && executingSwitchGroup)
-  {
-    //
-    // Switch has been turned ON -AND- we are executing a switch group
-    //
-
-    // Check to see if switch off was attempted by currently running group.
-    // If so, then the switch was turned off by the arm servo and we should do nothing and 
-    // let sequence complete normally.  
-    
-    if (!switchGroupTable[switchGroupIndex].getSwitchOffAttempted())
-    {
-      // The sequence has not yet attempted to turn off the switch so a human turned the 
-      // switch off before the arm servo had a chance to.  If so, stop the current sequence 
-      // and return everything to a known state.
-      DebugPrintln(F("Stopping Switch Group"));
-      // Stop switch sequence
-      switchGroupTable[switchGroupIndex].reset();
+    case SILLY_START_SWITCH_GROUP:
+      DebugPrintln(F("SILLY_START_SWITCH_GROUP"));
       switchGroupIndex = random(numSwitchGroups);
-      executingSwitchGroup = false;
-    }
-  }
-  
+      DebugPrint(F("Start Switch Group "));
+      DebugPrintln(switchGroupIndex);
+      switchGroupTable[switchGroupIndex].start();
+      sillyState = SILLY_EXEC_SWITCH_GROUP;
+      break;
+      
+    //    
+    // State SILLY_EXEC_SWITCH_GROUP executes a switch group until either the human turns off
+    // the switch or the switch group completes
+    //
+    case SILLY_EXEC_SWITCH_GROUP:
+      // If the switch was turned off and the sequence has not yet attempted to turn off the switch 
+      // then a human turned the switch off before the arm servo had a chance to.  If so, stop the 
+      // current group.  Otherwise continue executing the group until it is complete
+      if (switchAction == TRANS_TO_OFF && !switchGroupTable[switchGroupIndex].getSwitchOffAttempted()
+      ||  switchGroupTable[switchGroupIndex].loop() == group::GROUP_COMPLETE)
+      {
+        DebugPrintln(F("Switch Group Complete"));
+        switchGroupTable[switchGroupIndex].reset();
+        sillyState = SILLY_IDLE;
+      } 
+      break;
+      
+    //    
+    // State SILLY_EXEC_PROX_GROUP executes a prox group until either the human turns on
+    // the switch or the switch group completes
+    //
+    case SILLY_EXEC_PROX_GROUP:
+      if (switchAction == TRANS_TO_ON)
+      {
+        // Human was brave enough to mo e the switch anyhow.
+        proxGroupTable[proxGroupIndex].reset();
+        sillyState = SILLY_START_SWITCH_GROUP;
+      }
+      else if (proxGroupTable[proxGroupIndex].loop() == group::GROUP_COMPLETE)
+      {
+        DebugPrintln(F("Prox Group Complete"));
+        proxGroupTable[proxGroupIndex].reset();
+        sillyState = SILLY_IDLE;
+      }
+      break;
 
-  ///////////////////////////////////////////////////////////////////////////////
-  // P r o c e s s    p r o x i m i t y   a l e r t s
-  ///////////////////////////////////////////////////////////////////////////////
-
-  // If we are not currently executing a group then check the proximity sensor for an
-  // alert.  Note that even if there is a hand approching the switch, alerts are only
-  // issued randomly.
-  
-  if ( !executingSwitchGroup && !executingProxGroup && proxSensor.proximityAlertCheck())
-  {
-    DebugPrintln(F("Start Proximity Group"));
-    DebugPrint(F("Start Prox Group "));
-    DebugPrintln(proxGroupIndex);
-    proxGroupTable[proxGroupIndex].start();
-    executingProxGroup = true;
-  }
-  
-
-  ///////////////////////////////////////////////////////////////////////////////
-  // E x e c u t e   G r o u p   S e q u e n c e s
-  ///////////////////////////////////////////////////////////////////////////////
-
-  if (executingSwitchGroup)
-  {
-    if (switchGroupTable[switchGroupIndex].loop() == group::GROUP_COMPLETE)
-    {
-      DebugPrintln(F("Switch Group Complete"));
-      switchGroupTable[switchGroupIndex].reset();
-      switchGroupIndex = random(numSwitchGroups);
-      executingSwitchGroup = false;
-    }
-  }
-  else if (executingProxGroup)
-  {
-    if (proxGroupTable[proxGroupIndex].loop() == group::GROUP_COMPLETE)
-    {
-      DebugPrintln(F("Prox Group Complete"));
-      proxGroupTable[proxGroupIndex].reset();
-      proxGroupIndex = random(numProxGroups);
-      executingProxGroup = false;
-    }
+    default:
+      // !!!!!!!!!!!!!!!!!!!!!!  SHOULD NEVER HAPPEN  !!!!!!!!!!!!!!!!!!!!!!
+      DebugPrintln(F("ERROR: Invalid sillyState value!!! Resetting to idle state..."));
+      sillyState = SILLY_IDLE;
+      break;
   }
 }
 
