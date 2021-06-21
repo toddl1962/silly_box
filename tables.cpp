@@ -871,32 +871,3 @@ group proxGroupTable[] =
 };
 
 int numProxGroups = sizeof(proxGroupTable)/sizeof(proxGroupTable[0]);
-
-///////////////////////////////////////////////////////////////////////////////
-// T e s t   M o d e
-///////////////////////////////////////////////////////////////////////////////
-
-//
-// The following sequence is for the test mode 
-//
-const sequence::seqEntry testModeTable[] PROGMEM = 
-{
-  {ACTION_OPEN_LID_FROM_CLOSE, 20},
-  {ACTION_DELAY, 2000},
-  {ACTION_EXTEND_ARM_FROM_RETRACTED, 20},
-  {ACTION_DELAY, 2000},
-  {ACTION_RETRACT_ARM},
-  {ACTION_DELAY, 2000},
-  {ACTION_CLOSE_LID},
-  {ACTION_END}
-};
-
-moveSequence testModeSequence(testModeTable);
-
-sequence* const testModeGroup[] PROGMEM =  
-{
-  &testModeSequence,  
-  NULL
-};
-
-group testMode(testModeGroup);

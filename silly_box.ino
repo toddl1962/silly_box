@@ -115,42 +115,6 @@ int switchActionCheck()
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 //
-// testModeLoop()
-//
-// Servo test mode.  Test mode can only be entered if the testModePin is grounded
-// at power up.  This function is only called for test mode and never exits!
-//
-/////////////////////////////////////////////////////////////////////////////////////////////
-
-void testModeLoop()
-{
-  bool executingTestGroup = false;
-
-  while (1)
-  {
-    switchActionEnum switchAction = (switchActionEnum) switchActionCheck();
-
-    if (switchAction == TRANS_TO_ON)
-    {
-      DebugPrintln(F("Start Test Group"));
-      testMode.start();
-      executingTestGroup = true;
-    }
-    
-    if (executingTestGroup)
-    {
-      if (testMode.loop() == group::GROUP_COMPLETE)
-      {
-        DebugPrintln(F("Test Group Complete"));
-        testMode.reset();
-        executingTestGroup = false;
-      }
-    }
-  }
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////
-//
 // setup()
 //
 // Arduino required setup() function for hardware and software initialization
@@ -182,7 +146,12 @@ void setup()
   if (digitalRead(testModePin) == LOW) 
   {
     DebugPrintln(F("********** ENTERING TEST MODE ************"));
-    testModeLoop();
+    // Set servos to lid fully opened and arm fully extended.  This allows control horns on the
+    // servos to be set to the proper angles.
+    moveSequence::lidServo.write(moveSequence::lidOpenedAngle);
+    delay(1000);
+    moveSequence::armServo.write(moveSequence::armExtendedAngle);
+    while(1); // park here until reset
   }
 }
 
