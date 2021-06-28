@@ -1,1 +1,1 @@
-This commit has not been tested thoroughly yet
+I have decided to release this code under the FSF GPL version 3.0 license

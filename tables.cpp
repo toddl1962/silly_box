@@ -8,6 +8,25 @@
 /////////////////////////////////////////////////////////////////////////////////////////////
 
 /////////////////////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright 2021, Todd W. Lumpkin
+//
+//  This file is part of the "Silly Box" program.
+//
+//  "Silly Box" is free software: you can redistribute it and/or modify it under the terms 
+//  of the GNU General Public License as published by the Free Software Foundation, 
+//  version 3 of the License.
+//
+//  "Silly Box" is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+//  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+//  See the GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License along with "Silly Box" 
+//  in a file named gpl-3.0.txt.  If not, see <https://www.gnu.org/licenses/>.
+//
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////////////////////////////////////////
 //  
 //  HOW THESE TABLES WORK
 //  ---------------------
@@ -317,7 +336,7 @@ const sequence::seqEntry moveTable8[] PROGMEM =
 
 const sequence::seqEntry moveTable9[] PROGMEM = 
 {
-  {ACTION_PEEK_LID_FROM_CLOSE, 15, 6},
+  {ACTION_PEEK_LID_FROM_CLOSE, 5, 6},
   {ACTION_DELAY, 2000},
   {ACTION_OPEN_LID},
   {ACTION_ALMOST_EXTEND_ARM_FROM_RETRACTED, 40},
@@ -327,7 +346,7 @@ const sequence::seqEntry moveTable9[] PROGMEM =
   {ACTION_RETRACT_ARM_FROM_EXTENDED, 40},
   {ACTION_CLOSE_LID},
   {ACTION_DELAY, 2000},
-  {ACTION_PEEK_LID_FROM_CLOSE, 20, 0},
+  {ACTION_PEEK_LID_FROM_CLOSE, 10, 0},
   {ACTION_DELAY, 3000},
   {ACTION_CLOSE_LID},
   {ACTION_END}
@@ -335,37 +354,37 @@ const sequence::seqEntry moveTable9[] PROGMEM =
 
 const sequence::seqEntry moveTable10[] PROGMEM = 
 {
-  {ACTION_PEEK_LID_FROM_CLOSE, 15, 100},
+  {ACTION_PEEK_LID_FROM_CLOSE, 5, 100},
   {ACTION_DELAY, 2000},
   {ACTION_CLOSE_LID},
-  {ACTION_PEEK_LID_FROM_CLOSE, 20, 6},
+  {ACTION_PEEK_LID_FROM_CLOSE, 10, 6},
   {ACTION_DELAY, 100},
   {ACTION_CLOSE_LID},
-  {ACTION_PEEK_LID_FROM_CLOSE, 20, 6},
+  {ACTION_PEEK_LID_FROM_CLOSE, 10, 6},
   {ACTION_DELAY, 100},
   {ACTION_CLOSE_LID},
-  {ACTION_PEEK_LID_FROM_CLOSE, 20, 6},
+  {ACTION_PEEK_LID_FROM_CLOSE, 10, 6},
   {ACTION_DELAY, 100},
   {ACTION_CLOSE_LID},
-  {ACTION_PEEK_LID_FROM_CLOSE, 20, 6},
+  {ACTION_PEEK_LID_FROM_CLOSE, 10, 6},
   {ACTION_DELAY, 100},
   {ACTION_CLOSE_LID},
-  {ACTION_PEEK_LID_FROM_CLOSE, 20, 6},
+  {ACTION_PEEK_LID_FROM_CLOSE, 10, 6},
   {ACTION_DELAY, 100},
   {ACTION_CLOSE_LID},
-  {ACTION_PEEK_LID_FROM_CLOSE, 20, 6},
+  {ACTION_PEEK_LID_FROM_CLOSE, 10, 6},
   {ACTION_DELAY, 100},
   {ACTION_CLOSE_LID},
-  {ACTION_PEEK_LID_FROM_CLOSE, 20, 6},
+  {ACTION_PEEK_LID_FROM_CLOSE, 10, 6},
   {ACTION_DELAY, 100},
   {ACTION_CLOSE_LID},
-  {ACTION_PEEK_LID_FROM_CLOSE, 20, 6},
+  {ACTION_PEEK_LID_FROM_CLOSE, 10, 6},
   {ACTION_DELAY, 100},
   {ACTION_CLOSE_LID},
-  {ACTION_PEEK_LID_FROM_CLOSE, 20, 6},
+  {ACTION_PEEK_LID_FROM_CLOSE, 10, 6},
   {ACTION_DELAY, 100},
   {ACTION_CLOSE_LID},
-  {ACTION_PEEK_LID_FROM_CLOSE, 20, 6},
+  {ACTION_PEEK_LID_FROM_CLOSE, 10, 6},
   {ACTION_DELAY, 100},
   {ACTION_OPEN_LID},
   {ACTION_DELAY, 100},
@@ -444,7 +463,7 @@ const sequence::seqEntry moveTable13[] PROGMEM =
     
 const sequence::seqEntry moveTable14[] PROGMEM = 
 {
-  {ACTION_PEEK_LID_FROM_CLOSE, 15, 6},
+  {ACTION_PEEK_LID_FROM_CLOSE, 5, 6},
   {ACTION_DELAY, 4000},
   {ACTION_OPEN_LID},
   {ACTION_EXTEND_ARM},
@@ -459,14 +478,14 @@ const sequence::seqEntry moveTable14[] PROGMEM =
    
 const sequence::seqEntry moveTable15[] PROGMEM = 
 {
-  {ACTION_PEEK_LID_FROM_CLOSE, 15, 6},
+  {ACTION_PEEK_LID_FROM_CLOSE, 5, 6},
   {ACTION_DELAY, 1000},
-  {ACTION_PEEK_LID_FROM_CLOSE, 15, 50},
-  {ACTION_CLOSE_LID_FROM_PEEK, 15, 50},
-  {ACTION_PEEK_LID_FROM_CLOSE, 15, 50},
-  {ACTION_CLOSE_LID_FROM_PEEK, 15, 50},
-  {ACTION_PEEK_LID_FROM_CLOSE, 15, 50},
-  {ACTION_CLOSE_LID_FROM_PEEK, 15, 50},
+  {ACTION_PEEK_LID_FROM_CLOSE, 5, 50},
+  {ACTION_CLOSE_LID_FROM_PEEK, 5, 50},
+  {ACTION_PEEK_LID_FROM_CLOSE, 5, 50},
+  {ACTION_CLOSE_LID_FROM_PEEK, 5, 50},
+  {ACTION_PEEK_LID_FROM_CLOSE, 5, 50},
+  {ACTION_CLOSE_LID_FROM_PEEK, 5, 50},
   {ACTION_OPEN_LID_FROM_CLOSE, 50},
   {ACTION_ALMOST_EXTEND_ARM_FROM_RETRACTED, 40},
   {ACTION_DELAY, 1000},
@@ -496,7 +515,7 @@ moveSequence moveSequence15(moveTable15);
 
 const sequence::seqEntry proxMoveTable1[] PROGMEM = 
 {
-  {ACTION_PEEK_LID_FROM_CLOSE, 20, 20},
+  {ACTION_PEEK_LID_FROM_CLOSE, 10, 20},
   {ACTION_DELAY, 1000},
   {ACTION_CLOSE_LID},
   {ACTION_END}
