@@ -44,7 +44,7 @@
 // Define preprocessor DEBUG to enable debug output.  Also, be sure to use the F macro when
 // printing strings in order to save RAM.
 
-//#define DEBUG
+#define DEBUG
 
 #include "sequence.h"
 #include "movesequence.h"
@@ -286,4 +286,3 @@ void loop()
       break;
   }
 }
-
