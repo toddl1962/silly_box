@@ -258,6 +258,11 @@ void loop()
         switchGroupTable[switchGroupIndex].reset();
         sillyState = SILLY_IDLE;
       } 
+      else if (switchAction == TRANS_TO_ON)
+      {
+        switchGroupTable[switchGroupIndex].reset();
+        sillyState = SILLY_START_SWITCH_GROUP;
+      }
       break;
       
     //    
