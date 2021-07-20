@@ -531,6 +531,7 @@ const sequence::seqEntry proxMoveTable2[] PROGMEM =
 
 moveSequence proxMoveSequence1(proxMoveTable1);
 moveSequence proxMoveSequence2(proxMoveTable2);
+moveSequence proxMoveSequence3(moveTable14);
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -683,7 +684,7 @@ const sequence::seqEntry soundBackUpTbl[] PROGMEM =
   {PITCH_B5, NOTE_QTR},
   {PITCH_REST, NOTE_QTR},
   {PITCH_B5, NOTE_QTR},
-  {PITCH_REST, NOTE_HALF},
+  {PITCH_REST, NOTE_QTR},
   {ACTION_END}
 };
 
@@ -714,6 +715,7 @@ const sequence::seqEntry soundFussyTbl[] PROGMEM =
 soundSequence soundFussy(soundFussyTbl, sequence::SECONDARY_SEQ, sequence::ONE_SHOT);
 soundSequence soundAnnoyed(soundAnnoyedTbl, sequence::SECONDARY_SEQ, sequence::ONE_SHOT);
 soundSequence soundBackUp(soundBackUpTbl, sequence::SECONDARY_SEQ, sequence::ONE_SHOT);
+soundSequence soundBackUpC(soundBackUpTbl, sequence::SECONDARY_SEQ, sequence::REPEATING);
 soundSequence soundStarsStripes(soundStarsStripesTbl, sequence::SECONDARY_SEQ, sequence::ONE_SHOT);
 soundSequence soundCharge(soundChargeTbl, sequence::SECONDARY_SEQ, sequence::ONE_SHOT);
 
@@ -883,10 +885,19 @@ sequence* const PROGMEM proxGroup2[] =
   NULL
 };
 
+sequence* const PROGMEM proxGroup3[] = 
+{
+  &proxMoveSequence3, 
+  &ledFastRotationSequence, 
+  &soundBackUpC, 
+  NULL
+};
+
 group proxGroupTable[] =
 {
   group(proxGroup1),
-  group(proxGroup2)
+  group(proxGroup2),
+  group(proxGroup3)
 };
 
 int numProxGroups = sizeof(proxGroupTable)/sizeof(proxGroupTable[0]);

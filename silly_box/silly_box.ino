@@ -56,6 +56,11 @@
 // Front switch pin
 const int switchPin = 2;
 
+// Idle timer.  If there is no activity for the timeout period then
+// a sequence will be executed.  This is to remind the human to turn
+// the power switch off.
+const unsigned long idleTimeoutMs = 5 * 60 * 1000L; // 5 minutes
+
 // Front switch action
 enum switchActionEnum
 {
@@ -145,7 +150,7 @@ void setup()
   // Switch pin input
   pinMode(switchPin, INPUT_PULLUP);
 
-  // Randon number seeding
+  // Random number seeding
   randomSeed(analogRead(A0));
   
   // Static setup of hardware
@@ -200,6 +205,7 @@ void loop()
   static sillyStateEnum sillyState = SILLY_IDLE; // Silly Box state
   static int switchGroupIndex;  // currently processing switch group
   static int proxGroupIndex;    // currently processing prox group
+  static unsigned long prevIdleMs = millis(); // idle timer milliseconds
   
   ///////////////////////////////////////////////////////////////////////////////////////////
   // Process the current state of the silly box
@@ -207,6 +213,7 @@ void loop()
   
   // Get front switch action. Must be called every time through loop()!
   switchActionEnum switchAction = (switchActionEnum) switchActionCheck();
+  unsigned long currMs = millis();
 
   switch (sillyState)
   {
@@ -217,12 +224,16 @@ void loop()
       if (switchAction == TRANS_TO_ON)
       {
         // A human has turned the switch on so execute a switch group
+        prevIdleMs = currMs;
         sillyState = SILLY_START_SWITCH_GROUP;
       }
-      else if (proxSensor.proximityAlertCheck())
+      else if (proxSensor.proximityAlertCheck()
+      ||  (currMs - prevIdleMs) > idleTimeoutMs)
       {
-        // Switch has not transitioned so check to see if a human is
-        // approaching the switch and begin the harassment procedure.
+        // Switch has not transitioned but either a human is
+        // approaching the switch or there has been a long idle time
+        // so begin the harassment procedure.
+        prevIdleMs = currMs;
         proxGroupIndex = random(numProxGroups);
         DebugPrint(F("Start Prox Group "));
         DebugPrintln(proxGroupIndex);
