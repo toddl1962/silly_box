@@ -158,6 +158,14 @@ void setup()
   moveSequence::setup();    // Movement hardware (servo) initialization
   ledSequence::setup();     // LED hardware initialization
 
+  // Check to see if switch is on at startup, if so, turn off
+  delay(50);
+  byte startupSwitchState = digitalRead(switchPin);
+  if (startupSwitchState == 0)
+  {
+    moveSequence::startupSwitchOff();
+  }
+
   DebugPrintln(F("Setup Complete"));
   
   // 

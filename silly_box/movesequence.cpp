@@ -61,6 +61,16 @@ void moveSequence::setup()
   moveSequence::lidServo.write(moveSequence::lidClosedAngle);
 }
 
+void moveSequence::startupSwitchOff()
+{
+  moveSequence::lidServo.write(moveSequence::lidOpenedAngle);
+  moveSequence::armServo.write(moveSequence::armExtendedAngle);
+  delay(1000);
+  moveSequence::armServo.write(moveSequence::armRetractedAngle);
+  delay(500);
+  moveSequence::lidServo.write(moveSequence::lidClosedAngle);
+}
+
 void moveSequence::startSequence()
 {
   // Call base class
