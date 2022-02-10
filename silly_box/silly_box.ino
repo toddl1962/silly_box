@@ -158,8 +158,9 @@ void setup()
   moveSequence::setup();    // Movement hardware (servo) initialization
   ledSequence::setup();     // LED hardware initialization
 
-  DebugPrintln(F("Setup Complete"));
-  
+  // Prevent damage if someone is holding the lid while the power switch is turned on
+  delay(3000);
+
   // 
   // Test mode can only be entered if the testModePin is grounded at power up.
   //
@@ -174,6 +175,18 @@ void setup()
     moveSequence::armServo.write(moveSequence::armExtendedAngle);
     while(1); // park here until reset
   }
+
+  // Check to see if switch is on at startup, if so, turn off
+  delay(50);
+  byte startupSwitchState = digitalRead(switchPin);
+  if (startupSwitchState == LOW)
+  {
+    moveSequence::startupSwitchOff();
+  }
+
+  DebugPrintln(F("Setup Complete"));
+  
+
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////

@@ -61,6 +61,7 @@ class moveSequence: public sequence
   // Methods
   public:
     static void setup();
+    static void startupSwitchOff();
     void startSequence();
     void stopSequence();
 
